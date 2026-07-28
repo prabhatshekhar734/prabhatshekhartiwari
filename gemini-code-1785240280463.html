@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prabhat Shekhar — SEO & AI Search Visibility Specialist</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Netlify Identity Widget -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --border: rgba(255,255,255,0.07);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 40px; height: 40px;
+    border: 1px solid rgba(0,229,255,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), width 0.3s, height 0.3s;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.25s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero-grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at 30% 50%, black 30%, transparent 75%);
+    animation: gridPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes gridPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 32px; height: 1px;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .hero-tag::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-left: 6px;
+    animation: pulseGreen 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGreen {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(0,229,255,0); }
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4.5rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+
+  .hero-name span {
+    -webkit-text-stroke: 1px rgba(0,229,255,0.6);
+    color: transparent;
+    position: relative;
+    display: inline-block;
+  }
+
+  .hero-title {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 300;
+    color: var(--muted);
+    margin-top: 20px;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+
+  .hero-title strong { color: var(--accent3); font-weight: 500; }
+
+  .hero-desc {
+    max-width: 600px;
+    margin-top: 28px;
+    line-height: 1.8;
+    color: var(--muted);
+    font-size: 0.95rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .btn-primary {
+    padding: 14px 36px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 500;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,229,255,0.4);
+  }
+
+  .btn-outline {
+    padding: 14px 36px;
+    border: 1px solid rgba(0,229,255,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  }
+
+  .btn-outline:hover {
+    background: rgba(0,229,255,0.08);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  section {
+    padding: 100px 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1;
+    letter-spacing: 0.03em;
+    margin-bottom: 60px;
+  }
+
+  /* ABOUT */
+  #about { background: rgba(18,18,26,0.85); backdrop-filter: blur(10px); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; max-width: 1100px; }
+  .about-text p { color: var(--muted); line-height: 1.9; margin-bottom: 20px; font-size: 0.95rem; }
+  .about-text p strong { color: var(--text); font-weight: 500; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .stat-card {
+    background: var(--surface2); border: 1px solid var(--border); padding: 28px 24px; position: relative;
+    overflow: hidden; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; transform-style: preserve-3d;
+  }
+  .stat-card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+
+  /* EXPERIENCE */
+  #experience { background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); }
+  .timeline { max-width: 900px; position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--accent), rgba(0,229,255,0.1), transparent); }
+  .timeline-item { padding-left: 48px; margin-bottom: 60px; position: relative; opacity: 0; transform: translateX(-20px); transition: opacity 0.6s, transform 0.6s; }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-dot { position: absolute; left: -5px; top: 6px; width: 11px; height: 11px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px rgba(0,229,255,0.6); }
+  .timeline-period { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--accent3); text-transform: uppercase; margin-bottom: 8px; }
+  .timeline-role { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; margin-bottom: 4px; }
+  .timeline-company { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; }
+  .timeline-bullets { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .timeline-bullets li { font-size: 0.88rem; color: var(--muted); line-height: 1.7; padding-left: 18px; position: relative; }
+  .timeline-bullets li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 0.7rem; }
+
+  /* SKILLS */
+  #skills { background: rgba(18,18,26,0.85); backdrop-filter: blur(10px); }
+  .skills-wrapper { max-width: 1100px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+  .skills-col-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--text); margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .skill-tag { padding: 8px 16px; background: var(--surface2); border: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--text); transition: all 0.3s; }
+  .skill-tag:hover, .skill-tag.highlight { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); }
+
+  /* EDUCATION */
+  #education { background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); }
+  .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; }
+  .edu-card { background: var(--surface); border: 1px solid var(--border); padding: 36px; position: relative; transition: all 0.4s; }
+  .edu-card:hover { border-color: rgba(0,229,255,0.25); transform: translateY(-8px); }
+  .edu-degree { font-family: 'Bebas Neue', sans-serif; font-size: 1.35rem; margin-bottom: 8px; }
+  .edu-school { font-size: 0.82rem; color: var(--muted); margin-bottom: 12px; }
+  .edu-year { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent3); }
+
+  /* BLOG SECTION */
+  #blog { background: rgba(18,18,26,0.85); backdrop-filter: blur(10px); }
+  .blog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1100px; }
+  .blog-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s;
+  }
+  .blog-card:hover { border-color: var(--accent); transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+  .blog-date { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent3); margin-bottom: 12px; }
+  .blog-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; margin-bottom: 12px; color: var(--text); }
+  .blog-excerpt { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+  .blog-link { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--accent); text-decoration: none; text-transform: uppercase; }
+
+  /* CONTACT */
+  #contact { background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); text-align: center; }
+  .contact-inner { max-width: 700px; margin: 0 auto; }
+  .contact-tagline { font-size: 1.05rem; color: var(--muted); line-height: 1.8; margin-bottom: 48px; }
+  .btn-get-in-touch {
+    padding: 18px 52px; background: transparent; border: 1px solid var(--accent); color: var(--accent);
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.2em; cursor: pointer; transition: all 0.3s;
+  }
+  .btn-get-in-touch:hover { background: var(--accent); color: #000; box-shadow: 0 0 40px rgba(0,229,255,0.35); }
+
+  footer { background: rgba(10,10,15,0.95); padding: 32px 48px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
+  .footer-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--accent); }
+  .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+
+  .hero-3d-shapes { position: absolute; right: 80px; top: 50%; transform: translateY(-50%); width: 380px; height: 380px; z-index: 2; pointer-events: none; }
+  #shapes-canvas { width: 100%; height: 100%; }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    section { padding: 70px 24px; }
+    #hero { padding: 100px 24px 80px; }
+    .hero-3d-shapes { display: none; }
+    .about-grid, .skills-wrapper, .edu-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">PS/</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Available for opportunities</div>
+    <h1 class="hero-name">Prabhat<br><span data-text="Shekhar">Shekhar</span></h1>
+    <p class="hero-title">SEO & <strong>AI Search Visibility</strong> Specialist</p>
+    <p class="hero-desc">
+      Scaling organic growth through technical SEO, AI-driven content strategies, and
+      Generative Engine Optimization. Optimizing brand presence across Google, Bing,
+      ChatGPT, Gemini, Perplexity & Claude.
+    </p>
+    <div class="hero-ctas">
+      <a href="#experience" class="btn-primary">View Work</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-3d-shapes">
+    <canvas id="shapes-canvas"></canvas>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">Who I Am</div>
+  <h2 class="section-title">About Me</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I'm a <strong>Results-driven SEO & AI Search Visibility Specialist</strong> with 2+ years of experience scaling organic growth through technical SEO, AI-driven content strategies, and Generative Engine Optimization (GEO).</p>
+      <p>I have a <strong>proven track record of optimizing brand presence</strong> across traditional search engines and emerging AI platforms including ChatGPT, Gemini, Perplexity, and Claude.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num">2+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Websites Managed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-label">Career Path</div>
+  <h2 class="section-title">Experience</h2>
+  <div class="timeline">
+    <div class="timeline-item visible">
+      <div class="timeline-dot"></div>
+      <div class="timeline-period">June 2025 – May 2026</div>
+      <h3 class="timeline-role">SEO & GEO Executive</h3>
+      <div class="timeline-company">Digitech India</div>
+      <ul class="timeline-bullets">
+        <li>Led SEO & GEO strategies across Google, Bing, ChatGPT, and Gemini.</li>
+        <li>Managed SEO for 12 websites simultaneously across diverse niches.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">Capabilities</div>
+  <h2 class="section-title">Skills & Tools</h2>
+  <div class="skills-wrapper">
+    <div>
+      <div class="skills-col-title">Core Expertise</div>
+      <div class="skill-tags">
+        <span class="skill-tag highlight">SEO (GEO & AEO)</span>
+        <span class="skill-tag">Technical SEO</span>
+        <span class="skill-tag">Structured Data</span>
+        <span class="skill-tag">Prompt Engineering</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">Academic Background</div>
+  <h2 class="section-title">Education</h2>
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-degree">B.Tech — Computer Science Engineering</div>
+      <div class="edu-school">SIRTE, Bhopal</div>
+      <div class="edu-year">2020 – 2024</div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG SECTION (NEW) -->
+<section id="blog">
+  <div class="section-label">Articles & Insights</div>
+  <h2 class="section-title">Blog Posts</h2>
+  <div class="blog-grid">
+    <div class="blog-card">
+      <div>
+        <div class="blog-date">JULY 2026 · AI SEARCH</div>
+        <h3 class="blog-card-title">Generative Engine Optimization (GEO) Guide</h3>
+        <p class="blog-excerpt">How to optimize your brand for AI engines like ChatGPT, Perplexity, and Claude.</p>
+      </div>
+      <a href="#" class="blog-link">Read Article →</a>
+    </div>
+    <div class="blog-card">
+      <div>
+        <div class="blog-date">JUNE 2026 · TECHNICAL SEO</div>
+        <h3 class="blog-card-title">Entity-Based SEO Strategies</h3>
+        <p class="blog-excerpt">Building topical authority using structured schema and knowledge graph optimization.</p>
+      </div>
+      <a href="#" class="blog-link">Read Article →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-label" style="justify-content: center;">Get In Touch</div>
+    <h2 class="section-title" style="text-align: center;">Let's Work Together</h2>
+    <p class="contact-tagline">Open to exciting SEO, GEO, and AI visibility roles.</p>
+    <a href="mailto:prabhatshekhar734@gmail.com" class="btn-get-in-touch" style="display:inline-block; text-decoration:none;">📬 Get In Touch</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-name">Prabhat Shekhar</div>
+  <div class="footer-copy">© 2026 — SEO & AI Visibility Specialist</div>
+</footer>
+
+<script>
+// THREE.JS Simple BG
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 30;
+
+  const particleCount = 600;
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 100;
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const pMat = new THREE.PointsMaterial({ size: 0.2, color: 0x00e5ff, transparent: true, opacity: 0.5 });
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  function animate() {
+    requestAnimationFrame(animate);
+    particles.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+// Cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX - 6 + 'px';
+  cursor.style.top = e.clientY - 6 + 'px';
+  ring.style.left = e.clientX - 20 + 'px';
+  ring.style.top = e.clientY - 20 + 'px';
+});
+
+// Netlify Identity Login Redirect Script
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", user => {
+    if (!user) {
+      window.netlifyIdentity.on("login", () => {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+</script>
+</body>
+</html>
